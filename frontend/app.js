@@ -5,7 +5,7 @@
 // Configuration
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8000'
-    : 'https://tu-backend-url.railway.app';  // Cambiar por URL real del backend
+    : 'https://radio-inversion-calculator-production.up.railway.app';  // URL pública de Railway
 
 // DOM Elements
 const uploadZone = document.getElementById('uploadZone');
