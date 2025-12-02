@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Inversión Calculator | Reset - The Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">📻</span>
+                <div class="logo-text">
+                    <h1>Radio Inversión Calculator</h1>
+                    <span class="subtitle">Reset - The Lab</span>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge">Laureate Project</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Instructions Card -->
+            <div class="card instructions-card">
+                <h2>📋 Instrucciones</h2>
+                <ol>
+                    <li>Exporta tu tabla dinámica de IBOPE en Excel</li>
+                    <li>El archivo debe tener las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>EMISORA/SITE</code>, <code>MES</code>, <code>AÑO</code>, <code>Suma de SPOTS</code></li>
+                    <li>Arrastra el archivo o haz clic para seleccionarlo</li>
+                    <li>Descarga el resultado con los cálculos de inversión</li>
+                </ol>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="card upload-card">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <h3>Arrastra tu archivo Excel aquí</h3>
+                        <p>o haz clic para seleccionar</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+                        <button class="btn btn-secondary" id="selectBtn">Seleccionar archivo</button>
+                    </div>
+                    <div class="upload-progress" id="uploadProgress" hidden>
+                        <div class="spinner"></div>
+                        <p>Procesando archivo...</p>
+                    </div>
+                </div>
+
+                <!-- File Preview -->
+                <div class="file-preview" id="filePreview" hidden>
+                    <div class="file-info">
+                        <span class="file-icon">📊</span>
+                        <div class="file-details">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-stats" id="fileStats"></span>
+                        </div>
+                        <button class="btn-icon" id="removeFile" title="Quitar archivo">✕</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="actions" id="actions" hidden>
+                    <button class="btn btn-primary btn-lg" id="processBtn">
+                        <span class="btn-icon-left">⚡</span>
+                        Calcular Inversión
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card results-card" id="resultsCard" hidden>
+                <div class="results-header">
+                    <h2>✅ Procesamiento completado</h2>
+                </div>
+                <div class="results-content">
+                    <p>Tu archivo ha sido procesado exitosamente. El Excel de salida incluye:</p>
+                    <ul>
+                        <li><strong>Detalle:</strong> Todas las filas con cálculos de impactos e inversión</li>
+                        <li><strong>Resumen por Marca:</strong> Totales por universidad</li>
+                        <li><strong>Resumen por Tipo:</strong> Desglose SPOT/MENCION/P/D</li>
+                        <li><strong>Resumen por Mes:</strong> Evolución mensual</li>
+                        <li><strong>Resumen por Emisora:</strong> Distribución por radio</li>
+                    </ul>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-success btn-lg" id="downloadBtn">
+                        <span class="btn-icon-left">📥</span>
+                        Descargar Excel
+                    </button>
+                    <button class="btn btn-secondary" id="newFileBtn">
+                        Procesar otro archivo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Card -->
+            <div class="card error-card" id="errorCard" hidden>
+                <div class="error-header">
+                    <span class="error-icon">⚠️</span>
+                    <h2>Error en el procesamiento</h2>
+                </div>
+                <p class="error-message" id="errorMessage"></p>
+                <button class="btn btn-secondary" id="retryBtn">Intentar de nuevo</button>
+            </div>
+
+            <!-- CPM Info Card -->
+            <div class="card info-card">
+                <h2>📊 CPM Configurados</h2>
+                <div class="cpm-grid">
+                    <div class="cpm-item">
+                        <span class="cpm-type">SPOT</span>
+                        <span class="cpm-value">S/ 11.60</span>
+                    </div>
+                    <div class="cpm-item">
+                        <span class="cpm-type">MENCIÓN</span>
+                        <span class="cpm-value">S/ 39.80</span>
+                    </div>
+                    <div class="cpm-item">
+                        <span class="cpm-type">P/D</span>
+                        <span class="cpm-value">S/ 1.74</span>
+                    </div>
+                </div>
+                <p class="info-note">
+                    Los rankings de CPI están actualizados hasta Noviembre 2025. 
+                    Si no existe el mes exacto, se usa el promedio anual de la emisora.
+                </p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Desarrollado por <strong>The Lab</strong> para el proyecto Laureate</p>
+            <p class="footer-note">Los cálculos son estimados basados en CPM promedio y rankings de CPI</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
