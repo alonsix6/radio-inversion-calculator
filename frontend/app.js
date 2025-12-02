@@ -196,5 +196,153 @@ async function checkAPIHealth() {
     }
 }
 
+// Rankings Modal
+const viewRankingsBtn = document.getElementById('viewRankingsBtn');
+const rankingsModal = document.getElementById('rankingsModal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const modalStats = document.getElementById('modalStats');
+const rankingsContent = document.getElementById('rankingsContent');
+const yearFilter = document.getElementById('yearFilter');
+const monthFilter = document.getElementById('monthFilter');
+
+let rankingsData = null;
+
+viewRankingsBtn.addEventListener('click', openRankingsModal);
+closeModalBtn.addEventListener('click', closeRankingsModal);
+rankingsModal.addEventListener('click', (e) => {
+    if (e.target === rankingsModal) closeRankingsModal();
+});
+yearFilter.addEventListener('change', renderRankings);
+monthFilter.addEventListener('change', renderRankings);
+
+async function openRankingsModal() {
+    rankingsModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    if (!rankingsData) {
+        await loadRankings();
+    } else {
+        renderRankings();
+    }
+}
+
+function closeRankingsModal() {
+    rankingsModal.hidden = true;
+    document.body.style.overflow = '';
+}
+
+async function loadRankings() {
+    try {
+        const response = await fetch(`${API_URL}/rankings`);
+        if (!response.ok) throw new Error('Error cargando rankings');
+
+        rankingsData = await response.json();
+
+        // Populate stats
+        modalStats.innerHTML = `
+            <div class="modal-stat">
+                <span class="modal-stat-value">${rankingsData.stats.total_registros}</span>
+                <span class="modal-stat-label">Registros</span>
+            </div>
+            <div class="modal-stat">
+                <span class="modal-stat-value">${rankingsData.stats.emisoras_unicas}</span>
+                <span class="modal-stat-label">Emisoras</span>
+            </div>
+            <div class="modal-stat">
+                <span class="modal-stat-value">${rankingsData.stats.años.length}</span>
+                <span class="modal-stat-label">Años</span>
+            </div>
+        `;
+
+        // Populate year filter
+        yearFilter.innerHTML = rankingsData.stats.años
+            .sort((a, b) => b - a)
+            .map((year, i) => `<option value="${year}" ${i === 0 ? 'selected' : ''}>${year}</option>`)
+            .join('');
+
+        updateMonthFilter();
+        renderRankings();
+
+    } catch (error) {
+        console.error('Error loading rankings:', error);
+        rankingsContent.innerHTML = `
+            <div class="loading-rankings">
+                <p>Error cargando rankings. Intenta de nuevo.</p>
+            </div>
+        `;
+    }
+}
+
+function updateMonthFilter() {
+    const selectedYear = yearFilter.value;
+    const months = Object.keys(rankingsData.rankings[selectedYear] || {});
+
+    const monthOrder = ['Marzo', 'Junio', 'Agosto', 'Septiembre', 'Noviembre'];
+    months.sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+
+    monthFilter.innerHTML = `
+        <option value="">Todos los meses</option>
+        ${months.map(month => `<option value="${month}">${month}</option>`).join('')}
+    `;
+}
+
+function renderRankings() {
+    const selectedYear = yearFilter.value;
+    const selectedMonth = monthFilter.value;
+
+    if (!rankingsData || !rankingsData.rankings[selectedYear]) {
+        rankingsContent.innerHTML = '<p>No hay datos disponibles</p>';
+        return;
+    }
+
+    updateMonthFilter();
+
+    const yearData = rankingsData.rankings[selectedYear];
+    const monthsToShow = selectedMonth ? [selectedMonth] : Object.keys(yearData);
+
+    const monthOrder = ['Marzo', 'Junio', 'Agosto', 'Septiembre', 'Noviembre'];
+    monthsToShow.sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+
+    let html = '';
+
+    monthsToShow.forEach(month => {
+        const emisoras = yearData[month];
+        if (!emisoras) return;
+
+        html += `
+            <div class="rankings-section">
+                <div class="rankings-section-title">${month} ${selectedYear}</div>
+                <table class="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Emisora</th>
+                            <th style="text-align: right">Rating (miles)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${emisoras.map((e, i) => `
+                            <tr>
+                                <td class="rank-position">${i + 1}</td>
+                                <td class="rank-emisora">${e.emisora}</td>
+                                <td class="rank-value">${e.ranking.toFixed(1)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    });
+
+    rankingsContent.innerHTML = html;
+}
+
+// Keyboard support for modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !rankingsModal.hidden) {
+        closeRankingsModal();
+    }
+});
+
 // Initialize
 checkAPIHealth();
