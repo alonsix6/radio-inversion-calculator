@@ -39,16 +39,23 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
     # Normalizar nombres de columnas
     df.columns = [str(col).strip().upper() for col in df.columns]
 
-    # Mapear columnas conocidas
+    # Mapear columnas conocidas (nombres de Instar)
     column_mapping = {
+        # Canal
         'CANAL/SITE': 'CANAL',
+        # Spots/Avisos
+        'TOTAL SPOTS': 'SPOTS',
         'SUMA DE SPOTS': 'SPOTS',
         'SUMA DE SPOT': 'SPOTS',
         'SUMA DE AVISOS': 'SPOTS',
         'AVISOS': 'SPOTS',
         'SPOTS': 'SPOTS',
+        # Tipo
+        'TIPO COMERCIAL': 'TIPO',
+        # Año
         'AÑO': 'AÑO',
         'ANO': 'AÑO',
+        # Duración/Segundos
         'DURACION': 'SEGUNDOS',
         'DURACIÓN': 'SEGUNDOS',
         'SUMA DE SEGUNDOS': 'SEGUNDOS',
