@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 
 from processor import process_ibope_file, get_summary_stats
+from data.config import RANKINGS, CPM_CONFIG
 
 app = FastAPI(
     title="Radio Inversión Calculator",
@@ -97,6 +98,45 @@ async def process_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error procesando archivo: {str(e)}")
+
+
+@app.get("/rankings")
+async def get_rankings():
+    """
+    Devuelve todos los rankings de CPI disponibles, organizados por año y mes.
+    """
+    # Organizar rankings por año -> mes -> emisora
+    rankings_organized = {}
+
+    for (año, mes, emisora), valor in RANKINGS.items():
+        if año not in rankings_organized:
+            rankings_organized[año] = {}
+        if mes not in rankings_organized[año]:
+            rankings_organized[año][mes] = []
+        rankings_organized[año][mes].append({
+            "emisora": emisora,
+            "ranking": valor
+        })
+
+    # Ordenar emisoras por ranking (descendente) dentro de cada mes
+    for año in rankings_organized:
+        for mes in rankings_organized[año]:
+            rankings_organized[año][mes].sort(key=lambda x: x["ranking"], reverse=True)
+
+    # Obtener estadísticas
+    años = sorted(rankings_organized.keys())
+    total_registros = len(RANKINGS)
+    emisoras_unicas = len(set(e for (_, _, e) in RANKINGS.keys()))
+
+    return {
+        "cpm": CPM_CONFIG,
+        "rankings": rankings_organized,
+        "stats": {
+            "años": años,
+            "total_registros": total_registros,
+            "emisoras_unicas": emisoras_unicas
+        }
+    }
 
 
 if __name__ == "__main__":

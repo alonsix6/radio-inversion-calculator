@@ -141,7 +141,16 @@
 
             <!-- CPM Info Card -->
             <div class="card info-card">
-                <h2>CPM Configurados</h2>
+                <div class="info-card-header">
+                    <h2>CPM Configurados</h2>
+                    <button class="btn btn-secondary btn-sm" id="viewRankingsBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Ver Rankings CPI
+                    </button>
+                </div>
                 <div class="cpm-grid">
                     <div class="cpm-item">
                         <span class="cpm-type">Spot</span>
@@ -161,6 +170,38 @@
                 </p>
             </div>
         </main>
+
+        <!-- Rankings Modal -->
+        <div class="modal-overlay" id="rankingsModal" hidden>
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Rankings CPI por Audiencia</h2>
+                    <button class="btn-icon" id="closeModalBtn" title="Cerrar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-stats" id="modalStats">
+                    <!-- Stats se llenan dinámicamente -->
+                </div>
+                <div class="modal-filters">
+                    <select id="yearFilter" class="filter-select">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <select id="monthFilter" class="filter-select">
+                        <option value="">Todos los meses</option>
+                    </select>
+                </div>
+                <div class="modal-body" id="rankingsContent">
+                    <div class="loading-rankings">
+                        <div class="spinner"></div>
+                        <p>Cargando rankings...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Footer -->
         <footer class="footer">
