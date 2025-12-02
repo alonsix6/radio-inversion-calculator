@@ -297,31 +297,58 @@ RANKINGS = {
     (2025, "Noviembre", "RADIO DEL SUR FM"): 3.4,
 }
 
+# Orden de meses para calcular distancia
+MES_ORDEN = {
+    "Marzo": 3,
+    "Junio": 6,
+    "Agosto": 8,
+    "Septiembre": 9,
+    "Noviembre": 11
+}
+
 def get_ranking(año: int, mes: str, emisora: str) -> float:
     """
     Obtiene el ranking para una combinación año-mes-emisora.
     Estrategia de fallback:
     1. Buscar mes exacto
-    2. Si es Septiembre y no existe, usar Agosto del mismo año
-    3. Buscar promedio anual de la emisora
-    4. Buscar promedio histórico de la emisora
+    2. Buscar los dos meses más cercanos del mismo año y promediar
+    3. Si solo hay un mes en el año, usar ese
+    4. Buscar promedio histórico de la emisora en todos los años
     """
     key = (año, mes, emisora)
     if key in RANKINGS:
         return RANKINGS[key]
 
-    # Fallback para Septiembre: usar Agosto si existe (mes más cercano disponible)
-    if mes == "Septiembre":
-        key_agosto = (año, "Agosto", emisora)
-        if key_agosto in RANKINGS:
-            return RANKINGS[key_agosto]
+    # Obtener todos los meses disponibles para esta emisora en este año
+    meses_disponibles = [
+        (m, RANKINGS[(a, m, e)])
+        for (a, m, e) in RANKINGS.keys()
+        if a == año and e == emisora
+    ]
 
-    # Buscar promedio anual de la emisora
-    rankings_emisora = [v for (a, m, e), v in RANKINGS.items() if a == año and e == emisora]
-    if rankings_emisora:
-        return sum(rankings_emisora) / len(rankings_emisora)
+    if meses_disponibles:
+        # Calcular distancia de cada mes disponible al mes buscado
+        mes_num = MES_ORDEN.get(mes, 6)  # Default a Junio si no está en el mapeo
 
-    # Si no hay data del año, buscar en años cercanos
+        meses_con_distancia = []
+        for m, ranking in meses_disponibles:
+            m_num = MES_ORDEN.get(m, 6)
+            distancia = abs(mes_num - m_num)
+            meses_con_distancia.append((distancia, m, ranking))
+
+        # Ordenar por distancia
+        meses_con_distancia.sort(key=lambda x: x[0])
+
+        if len(meses_con_distancia) >= 2:
+            # Promedio de los dos meses más cercanos
+            ranking1 = meses_con_distancia[0][2]
+            ranking2 = meses_con_distancia[1][2]
+            return (ranking1 + ranking2) / 2
+        else:
+            # Solo hay un mes disponible, usar ese
+            return meses_con_distancia[0][2]
+
+    # Si no hay data del año, buscar promedio histórico de la emisora
     all_rankings = [v for (a, m, e), v in RANKINGS.items() if e == emisora]
     if all_rankings:
         return sum(all_rankings) / len(all_rankings)
