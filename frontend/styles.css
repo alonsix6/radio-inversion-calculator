@@ -333,11 +333,6 @@ body {
 /* Error Card */
 .error-card {
     border: 2px solid var(--danger);
-    display: none;
-}
-
-.error-card[hidden="false"] {
-    display: block;
 }
 
 .error-header {

@@ -300,20 +300,30 @@ RANKINGS = {
 def get_ranking(año: int, mes: str, emisora: str) -> float:
     """
     Obtiene el ranking para una combinación año-mes-emisora.
-    Si no existe el mes exacto, busca el promedio anual de esa emisora.
+    Estrategia de fallback:
+    1. Buscar mes exacto
+    2. Si es Septiembre y no existe, usar Agosto del mismo año
+    3. Buscar promedio anual de la emisora
+    4. Buscar promedio histórico de la emisora
     """
     key = (año, mes, emisora)
     if key in RANKINGS:
         return RANKINGS[key]
-    
+
+    # Fallback para Septiembre: usar Agosto si existe (mes más cercano disponible)
+    if mes == "Septiembre":
+        key_agosto = (año, "Agosto", emisora)
+        if key_agosto in RANKINGS:
+            return RANKINGS[key_agosto]
+
     # Buscar promedio anual de la emisora
     rankings_emisora = [v for (a, m, e), v in RANKINGS.items() if a == año and e == emisora]
     if rankings_emisora:
         return sum(rankings_emisora) / len(rankings_emisora)
-    
+
     # Si no hay data del año, buscar en años cercanos
     all_rankings = [v for (a, m, e), v in RANKINGS.items() if e == emisora]
     if all_rankings:
         return sum(all_rankings) / len(all_rankings)
-    
+
     return 0.0
