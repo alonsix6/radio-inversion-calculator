@@ -7,18 +7,9 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
 from config.tv_config import (
-    TIPO_MAPPING_TV, MES_TO_RANKING_TV,
-    get_tv_config, get_rating_tv
+    TIPO_MAPPING_TV,
+    get_tv_config
 )
-
-
-def normalizar_mes(mes: str) -> str:
-    """Normaliza el nombre del mes a minúsculas sin tildes."""
-    mes_lower = str(mes).lower().strip()
-    replacements = {'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u'}
-    for old, new in replacements.items():
-        mes_lower = mes_lower.replace(old, new)
-    return mes_lower
 
 
 def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
@@ -27,12 +18,13 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
 
     El archivo de entrada debe tener las columnas:
     - MARCA
-    - TIPO
-    - CANAL/SITE (o CANAL)
+    - TIPO COMERCIAL
+    - CANAL
     - MES
     - AÑO
-    - Suma de SPOTS o AVISOS
-    - SEGUNDOS (duración del spot)
+    - TOTAL SPOTS
+    - DURACIÓN (segundos)
+    - GRP# [RATING] (rating agregado por fila)
     """
     df = pd.read_excel(BytesIO(file_content))
 
@@ -59,6 +51,11 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
         'DURACION': 'SEGUNDOS',
         'DURACIÓN': 'SEGUNDOS',
         'SUMA DE SEGUNDOS': 'SEGUNDOS',
+        # GRP (rating agregado) - columna clave de Instar
+        'GRP# [RATING]': 'GRP',
+        'GRP#': 'GRP',
+        'GRP': 'GRP',
+        'RATING': 'GRP',
     }
 
     for old_name, new_name in column_mapping.items():
@@ -66,7 +63,7 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
             df = df.rename(columns={old_name: new_name})
 
     # Verificar columnas requeridas
-    required_cols = ['MARCA', 'TIPO', 'CANAL', 'MES', 'AÑO', 'SPOTS']
+    required_cols = ['MARCA', 'TIPO', 'CANAL', 'MES', 'AÑO', 'SPOTS', 'GRP']
     missing_cols = [col for col in required_cols if col not in df.columns]
     if missing_cols:
         raise ValueError(f"Columnas faltantes en el archivo: {missing_cols}. Columnas encontradas: {list(df.columns)}")
@@ -80,10 +77,9 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
     df['SPOTS'] = pd.to_numeric(df['SPOTS'], errors='coerce').fillna(0).astype(int)
     df['AÑO'] = pd.to_numeric(df['AÑO'], errors='coerce').fillna(2024).astype(int)
     df['SEGUNDOS'] = pd.to_numeric(df['SEGUNDOS'], errors='coerce').fillna(30).astype(int)
+    df['GRP'] = pd.to_numeric(df['GRP'], errors='coerce').fillna(0)
 
     # Calcular columnas adicionales
-    df['MES_NORM'] = df['MES'].apply(normalizar_mes)
-    df['MES_RATING'] = df['MES_NORM'].map(MES_TO_RANKING_TV).fillna('Enero')
     df['TIPO_AGRUP'] = df['TIPO'].str.upper().map(TIPO_MAPPING_TV).fillna('SPOT')
 
     # Obtener CPM/CPR para cada fila
@@ -93,14 +89,10 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
 
     df[['CPM', 'CPR']] = df.apply(get_cpm_cpr, axis=1)
 
-    # Calcular rating
-    df['RATING'] = df.apply(
-        lambda row: get_rating_tv(row['AÑO'], row['MES_RATING'], row['CANAL']),
-        axis=1
-    )
-
-    # Calcular impactos: SPOTS × Rating × 1000 (convertido a miles de personas)
-    df['IMPACTOS'] = (df['SPOTS'] * df['RATING'] * 1000).round(0).astype(int)
+    # CORRECCIÓN: Calcular impactos usando GRP directamente (ya viene agregado por fila)
+    # Impactos = GRP × 1000 (convertir a personas)
+    # NO se multiplica por SPOTS porque el GRP ya es el rating total de esa fila
+    df['IMPACTOS'] = (df['GRP'] * 1000).round(0).astype(int)
 
     # Calcular inversión según tipo
     # Para SPOTS: Impactos × CPR × Segundos / 1000
@@ -121,44 +113,48 @@ def process_tv_file(file_content: bytes, filename: str) -> BytesIO:
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         # Hoja 1: Detalle completo
         df_output = df[['MARCA', 'TIPO', 'TIPO_AGRUP', 'CANAL', 'MES', 'AÑO',
-                        'MES_RATING', 'SPOTS', 'SEGUNDOS', 'CPM', 'CPR', 'RATING',
+                        'SPOTS', 'SEGUNDOS', 'GRP', 'CPM', 'CPR',
                         'IMPACTOS', 'INVERSION_SOLES']]
         df_output.to_excel(writer, sheet_name='Detalle', index=False)
 
         # Hoja 2: Resumen por Marca
         resumen_marca = df.groupby('MARCA').agg({
             'SPOTS': 'sum',
+            'GRP': 'sum',
             'IMPACTOS': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_marca.columns = ['Marca', 'Total Avisos', 'Total Impactos', 'Inversión (S/)']
+        resumen_marca.columns = ['Marca', 'Total Avisos', 'Total GRP', 'Total Impactos', 'Inversión (S/)']
         resumen_marca.to_excel(writer, sheet_name='Resumen por Marca', index=False)
 
         # Hoja 3: Resumen por Marca y Tipo
         resumen_tipo = df.groupby(['MARCA', 'TIPO_AGRUP']).agg({
             'SPOTS': 'sum',
+            'GRP': 'sum',
             'IMPACTOS': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_tipo.columns = ['Marca', 'Tipo', 'Total Avisos', 'Total Impactos', 'Inversión (S/)']
+        resumen_tipo.columns = ['Marca', 'Tipo', 'Total Avisos', 'Total GRP', 'Total Impactos', 'Inversión (S/)']
         resumen_tipo.to_excel(writer, sheet_name='Resumen por Tipo', index=False)
 
         # Hoja 4: Resumen por Marca y Mes
         resumen_mes = df.groupby(['MARCA', 'AÑO', 'MES']).agg({
             'SPOTS': 'sum',
+            'GRP': 'sum',
             'IMPACTOS': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_mes.columns = ['Marca', 'Año', 'Mes', 'Total Avisos', 'Total Impactos', 'Inversión (S/)']
+        resumen_mes.columns = ['Marca', 'Año', 'Mes', 'Total Avisos', 'Total GRP', 'Total Impactos', 'Inversión (S/)']
         resumen_mes.to_excel(writer, sheet_name='Resumen por Mes', index=False)
 
         # Hoja 5: Resumen por Canal
         resumen_canal = df.groupby(['MARCA', 'CANAL']).agg({
             'SPOTS': 'sum',
+            'GRP': 'sum',
             'IMPACTOS': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_canal.columns = ['Marca', 'Canal', 'Total Avisos', 'Total Impactos', 'Inversión (S/)']
+        resumen_canal.columns = ['Marca', 'Canal', 'Total Avisos', 'Total GRP', 'Total Impactos', 'Inversión (S/)']
         resumen_canal.to_excel(writer, sheet_name='Resumen por Canal', index=False)
 
         # Aplicar formato a todas las hojas
@@ -177,6 +173,7 @@ def get_tv_summary_stats(file_content: bytes) -> dict:
     df.columns = [str(col).strip().upper() for col in df.columns]
     column_mapping = {
         'CANAL/SITE': 'CANAL',
+        'TOTAL SPOTS': 'SPOTS',
         'SUMA DE SPOTS': 'SPOTS',
         'SUMA DE AVISOS': 'SPOTS',
     }
