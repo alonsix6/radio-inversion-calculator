@@ -14,6 +14,11 @@
     --accent-hover: #818cf8;
     --accent-subtle: rgba(99, 102, 241, 0.1);
 
+    /* TV accent color - purple/magenta */
+    --accent-tv: #a855f7;
+    --accent-tv-hover: #c084fc;
+    --accent-tv-subtle: rgba(168, 85, 247, 0.1);
+
     --success: #22c55e;
     --success-subtle: rgba(34, 197, 94, 0.1);
     --error: #ef4444;
@@ -812,4 +817,162 @@ body {
 ::selection {
     background: var(--accent);
     color: white;
+}
+
+/* ==================== TABS ==================== */
+.tabs-container {
+    margin-bottom: 1.5rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    padding: 0.375rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.tab:hover {
+    color: var(--text-secondary);
+    background: var(--bg-card);
+}
+
+.tab.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.tab.active[data-tab="radio"] {
+    color: var(--accent-hover);
+}
+
+.tab.active[data-tab="tv"] {
+    color: var(--accent-tv-hover);
+}
+
+.tab svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== TV-SPECIFIC STYLES ==================== */
+
+/* TV Instructions Card */
+.instructions-card-tv code {
+    background: var(--accent-tv-subtle);
+    color: var(--accent-tv-hover);
+}
+
+/* TV Upload Zone */
+.upload-icon-tv {
+    color: var(--accent-tv);
+}
+
+#uploadZoneTV.dragover {
+    background: var(--accent-tv-subtle);
+    border-color: var(--accent-tv);
+}
+
+/* TV Buttons */
+.btn-tv {
+    background: var(--accent-tv);
+}
+
+.btn-tv:hover {
+    background: var(--accent-tv-hover);
+}
+
+/* TV File Icon */
+.file-icon-tv {
+    background: var(--accent-tv-subtle);
+    color: var(--accent-tv);
+}
+
+/* TV Results Card */
+.results-card-tv {
+    border-color: var(--accent-tv);
+    background: linear-gradient(to bottom, var(--accent-tv-subtle), var(--bg-card));
+}
+
+.results-card-tv .results-header h2 {
+    color: var(--accent-tv);
+}
+
+/* TV Spinner */
+.spinner-tv {
+    border-top-color: var(--accent-tv);
+}
+
+/* TV Info Card */
+.info-card-tv h2 {
+    color: var(--accent-tv-hover);
+}
+
+.cpm-item-tv .cpm-value {
+    color: var(--accent-tv-hover);
+}
+
+/* TV Modal */
+.modal-tv .modal-header h2 {
+    color: var(--accent-tv-hover);
+}
+
+.modal-tv .modal-stat-value {
+    color: var(--accent-tv-hover);
+}
+
+.modal-tv .rank-value {
+    color: var(--accent-tv-hover);
+}
+
+/* Responsive adjustments for tabs */
+@media (max-width: 640px) {
+    .tabs {
+        flex-direction: row;
+    }
+
+    .tab {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    .tab svg {
+        width: 16px;
+        height: 16px;
+    }
 }

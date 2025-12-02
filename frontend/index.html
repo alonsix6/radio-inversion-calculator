@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Inversión Calculator</title>
+    <title>Media Investment Calculator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
             <div class="logo">
                 <span class="logo-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="2"></circle>
-                        <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                        <polyline points="17 2 12 7 7 2"></polyline>
                     </svg>
                 </span>
                 <div class="logo-text">
-                    <h1>Radio Inversión Calculator</h1>
+                    <h1>Media Investment Calculator</h1>
                     <span class="subtitle">Reset — The Lab</span>
                 </div>
             </div>
@@ -30,171 +30,334 @@
             </div>
         </header>
 
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="radio">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                    </svg>
+                    Radio (IBOPE)
+                </button>
+                <button class="tab" data-tab="tv">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                        <polyline points="17 2 12 7 7 2"></polyline>
+                    </svg>
+                    TV (Instar)
+                </button>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main">
-            <!-- Instructions Card -->
-            <div class="card instructions-card">
-                <h2>Instrucciones</h2>
-                <ol>
-                    <li>Exporta tu tabla dinámica de IBOPE en formato Excel</li>
-                    <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>EMISORA/SITE</code>, <code>MES</code>, <code>AÑO</code>, <code>Suma de SPOTS</code></li>
-                    <li>Arrastra el archivo o haz clic para seleccionarlo</li>
-                    <li>Descarga el resultado con los cálculos de inversión</li>
-                </ol>
-            </div>
-
-            <!-- Upload Card -->
-            <div class="card upload-card">
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-content">
-                        <div class="upload-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                        </div>
-                        <h3>Arrastra tu archivo Excel aquí</h3>
-                        <p>o haz clic para seleccionar</p>
-                        <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
-                        <button class="btn btn-secondary" id="selectBtn">Seleccionar archivo</button>
-                    </div>
-                    <div class="upload-progress" id="uploadProgress" hidden>
-                        <div class="spinner"></div>
-                        <p>Procesando archivo...</p>
-                    </div>
+            <!-- RADIO TAB CONTENT -->
+            <div class="tab-content active" id="radioContent">
+                <!-- Instructions Card -->
+                <div class="card instructions-card">
+                    <h2>Instrucciones - Radio</h2>
+                    <ol>
+                        <li>Exporta tu tabla dinámica de IBOPE en formato Excel</li>
+                        <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>EMISORA/SITE</code>, <code>MES</code>, <code>AÑO</code>, <code>Suma de SPOTS</code></li>
+                        <li>Arrastra el archivo o haz clic para seleccionarlo</li>
+                        <li>Descarga el resultado con los cálculos de inversión</li>
+                    </ol>
                 </div>
 
-                <!-- File Preview -->
-                <div class="file-preview" id="filePreview" hidden>
-                    <div class="file-info">
-                        <span class="file-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </span>
-                        <div class="file-details">
-                            <span class="file-name" id="fileName"></span>
-                            <span class="file-stats" id="fileStats"></span>
+                <!-- Upload Card Radio -->
+                <div class="card upload-card">
+                    <div class="upload-zone" id="uploadZoneRadio">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <h3>Arrastra tu archivo Excel aquí</h3>
+                            <p>o haz clic para seleccionar</p>
+                            <input type="file" id="fileInputRadio" accept=".xlsx,.xls" hidden>
+                            <button class="btn btn-secondary" id="selectBtnRadio">Seleccionar archivo</button>
                         </div>
-                        <button class="btn-icon" id="removeFile" title="Quitar archivo">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
+                        <div class="upload-progress" id="uploadProgressRadio" hidden>
+                            <div class="spinner"></div>
+                            <p>Procesando archivo...</p>
+                        </div>
+                    </div>
+
+                    <!-- File Preview Radio -->
+                    <div class="file-preview" id="filePreviewRadio" hidden>
+                        <div class="file-info">
+                            <span class="file-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </span>
+                            <div class="file-details">
+                                <span class="file-name" id="fileNameRadio"></span>
+                                <span class="file-stats" id="fileStatsRadio"></span>
+                            </div>
+                            <button class="btn-icon" id="removeFileRadio" title="Quitar archivo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Radio -->
+                    <div class="actions" id="actionsRadio" hidden>
+                        <button class="btn btn-primary btn-lg" id="processBtnRadio">
+                            Calcular Inversión Radio
                         </button>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="actions" id="actions" hidden>
-                    <button class="btn btn-primary btn-lg" id="processBtn">
-                        Calcular Inversión
-                    </button>
+                <!-- Results Card Radio -->
+                <div class="card results-card" id="resultsCardRadio" hidden>
+                    <div class="results-header">
+                        <h2>Procesamiento completado</h2>
+                    </div>
+                    <div class="results-content">
+                        <p>Tu archivo ha sido procesado exitosamente. El Excel de salida incluye:</p>
+                        <ul>
+                            <li><strong>Detalle:</strong> Todas las filas con cálculos de impactos e inversión</li>
+                            <li><strong>Resumen por Marca:</strong> Totales agregados por universidad</li>
+                            <li><strong>Resumen por Tipo:</strong> Desglose SPOT / MENCIÓN / P&D</li>
+                            <li><strong>Resumen por Mes:</strong> Evolución mensual</li>
+                            <li><strong>Resumen por Emisora:</strong> Distribución por radio</li>
+                        </ul>
+                    </div>
+                    <div class="results-actions">
+                        <button class="btn btn-success btn-lg" id="downloadBtnRadio">
+                            Descargar Excel
+                        </button>
+                        <button class="btn btn-secondary" id="newFileBtnRadio">
+                            Procesar otro archivo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Card Radio -->
+                <div class="card error-card" id="errorCardRadio" hidden>
+                    <div class="error-header">
+                        <span class="error-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
+                        <h2>Error en el procesamiento</h2>
+                    </div>
+                    <p class="error-message" id="errorMessageRadio"></p>
+                    <button class="btn btn-secondary" id="retryBtnRadio">Intentar de nuevo</button>
+                </div>
+
+                <!-- CPM Info Card Radio -->
+                <div class="card info-card">
+                    <div class="info-card-header">
+                        <h2>CPM Configurados - Radio</h2>
+                        <button class="btn btn-secondary btn-sm" id="viewRankingsBtnRadio">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Ver Rankings CPI
+                        </button>
+                    </div>
+                    <div class="cpm-grid">
+                        <div class="cpm-item">
+                            <span class="cpm-type">Spot</span>
+                            <span class="cpm-value">S/ 11.60</span>
+                        </div>
+                        <div class="cpm-item">
+                            <span class="cpm-type">Mención</span>
+                            <span class="cpm-value">S/ 39.80</span>
+                        </div>
+                        <div class="cpm-item">
+                            <span class="cpm-type">P&D</span>
+                            <span class="cpm-value">S/ 1.74</span>
+                        </div>
+                    </div>
+                    <p class="info-note">
+                        Rankings de CPI actualizados hasta Noviembre 2025. Si no existe el mes exacto, se calcula el promedio de los dos meses más cercanos.
+                    </p>
                 </div>
             </div>
 
-            <!-- Results Card -->
-            <div class="card results-card" id="resultsCard" hidden>
-                <div class="results-header">
-                    <h2>Procesamiento completado</h2>
+            <!-- TV TAB CONTENT -->
+            <div class="tab-content" id="tvContent">
+                <!-- Instructions Card TV -->
+                <div class="card instructions-card instructions-card-tv">
+                    <h2>Instrucciones - TV</h2>
+                    <ol>
+                        <li>Exporta tu tabla dinámica de Instar en formato Excel</li>
+                        <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>CANAL</code>, <code>MES</code>, <code>AÑO</code>, <code>AVISOS</code>, <code>SEGUNDOS</code></li>
+                        <li>Arrastra el archivo o haz clic para seleccionarlo</li>
+                        <li>Descarga el resultado con los cálculos de inversión</li>
+                    </ol>
                 </div>
-                <div class="results-content">
-                    <p>Tu archivo ha sido procesado exitosamente. El Excel de salida incluye:</p>
-                    <ul>
-                        <li><strong>Detalle:</strong> Todas las filas con cálculos de impactos e inversión</li>
-                        <li><strong>Resumen por Marca:</strong> Totales agregados por universidad</li>
-                        <li><strong>Resumen por Tipo:</strong> Desglose SPOT / MENCIÓN / P&D</li>
-                        <li><strong>Resumen por Mes:</strong> Evolución mensual</li>
-                        <li><strong>Resumen por Emisora:</strong> Distribución por radio</li>
-                    </ul>
-                </div>
-                <div class="results-actions">
-                    <button class="btn btn-success btn-lg" id="downloadBtn">
-                        Descargar Excel
-                    </button>
-                    <button class="btn btn-secondary" id="newFileBtn">
-                        Procesar otro archivo
-                    </button>
-                </div>
-            </div>
 
-            <!-- Error Card -->
-            <div class="card error-card" id="errorCard" hidden>
-                <div class="error-header">
-                    <span class="error-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </span>
-                    <h2>Error en el procesamiento</h2>
-                </div>
-                <p class="error-message" id="errorMessage"></p>
-                <button class="btn btn-secondary" id="retryBtn">Intentar de nuevo</button>
-            </div>
+                <!-- Upload Card TV -->
+                <div class="card upload-card">
+                    <div class="upload-zone" id="uploadZoneTV">
+                        <div class="upload-content">
+                            <div class="upload-icon upload-icon-tv">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <h3>Arrastra tu archivo Excel aquí</h3>
+                            <p>o haz clic para seleccionar</p>
+                            <input type="file" id="fileInputTV" accept=".xlsx,.xls" hidden>
+                            <button class="btn btn-secondary btn-tv" id="selectBtnTV">Seleccionar archivo</button>
+                        </div>
+                        <div class="upload-progress" id="uploadProgressTV" hidden>
+                            <div class="spinner spinner-tv"></div>
+                            <p>Procesando archivo...</p>
+                        </div>
+                    </div>
 
-            <!-- CPM Info Card -->
-            <div class="card info-card">
-                <div class="info-card-header">
-                    <h2>CPM Configurados</h2>
-                    <button class="btn btn-secondary btn-sm" id="viewRankingsBtn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        Ver Rankings CPI
-                    </button>
+                    <!-- File Preview TV -->
+                    <div class="file-preview" id="filePreviewTV" hidden>
+                        <div class="file-info">
+                            <span class="file-icon file-icon-tv">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </span>
+                            <div class="file-details">
+                                <span class="file-name" id="fileNameTV"></span>
+                                <span class="file-stats" id="fileStatsTV"></span>
+                            </div>
+                            <button class="btn-icon" id="removeFileTV" title="Quitar archivo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons TV -->
+                    <div class="actions" id="actionsTV" hidden>
+                        <button class="btn btn-primary btn-lg btn-tv" id="processBtnTV">
+                            Calcular Inversión TV
+                        </button>
+                    </div>
                 </div>
-                <div class="cpm-grid">
-                    <div class="cpm-item">
-                        <span class="cpm-type">Spot</span>
-                        <span class="cpm-value">S/ 11.60</span>
+
+                <!-- Results Card TV -->
+                <div class="card results-card results-card-tv" id="resultsCardTV" hidden>
+                    <div class="results-header">
+                        <h2>Procesamiento completado</h2>
                     </div>
-                    <div class="cpm-item">
-                        <span class="cpm-type">Mención</span>
-                        <span class="cpm-value">S/ 39.80</span>
+                    <div class="results-content">
+                        <p>Tu archivo ha sido procesado exitosamente. El Excel de salida incluye:</p>
+                        <ul>
+                            <li><strong>Detalle:</strong> Todas las filas con cálculos de impactos e inversión</li>
+                            <li><strong>Resumen por Marca:</strong> Totales agregados por universidad</li>
+                            <li><strong>Resumen por Tipo:</strong> Desglose SPOT / BANNER / L / MENCIÓN</li>
+                            <li><strong>Resumen por Mes:</strong> Evolución mensual</li>
+                            <li><strong>Resumen por Canal:</strong> Distribución por canal de TV</li>
+                        </ul>
                     </div>
-                    <div class="cpm-item">
-                        <span class="cpm-type">P&D</span>
-                        <span class="cpm-value">S/ 1.74</span>
+                    <div class="results-actions">
+                        <button class="btn btn-success btn-lg" id="downloadBtnTV">
+                            Descargar Excel
+                        </button>
+                        <button class="btn btn-secondary" id="newFileBtnTV">
+                            Procesar otro archivo
+                        </button>
                     </div>
                 </div>
-                <p class="info-note">
-                    Rankings de CPI actualizados hasta Noviembre 2025. Si no existe el mes exacto, se calcula el promedio de los dos meses más cercanos.
-                </p>
+
+                <!-- Error Card TV -->
+                <div class="card error-card" id="errorCardTV" hidden>
+                    <div class="error-header">
+                        <span class="error-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
+                        <h2>Error en el procesamiento</h2>
+                    </div>
+                    <p class="error-message" id="errorMessageTV"></p>
+                    <button class="btn btn-secondary" id="retryBtnTV">Intentar de nuevo</button>
+                </div>
+
+                <!-- CPM Info Card TV -->
+                <div class="card info-card info-card-tv">
+                    <div class="info-card-header">
+                        <h2>Tarifas Configuradas - TV</h2>
+                        <button class="btn btn-secondary btn-sm" id="viewRankingsBtnTV">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Ver Ratings TV
+                        </button>
+                    </div>
+                    <div class="cpm-grid cpm-grid-tv">
+                        <div class="cpm-item cpm-item-tv">
+                            <span class="cpm-type">Latina</span>
+                            <span class="cpm-value">CPR S/ 120.5</span>
+                        </div>
+                        <div class="cpm-item cpm-item-tv">
+                            <span class="cpm-type">América</span>
+                            <span class="cpm-value">CPR S/ 115.0</span>
+                        </div>
+                        <div class="cpm-item cpm-item-tv">
+                            <span class="cpm-type">ATV</span>
+                            <span class="cpm-value">CPR S/ 95.0</span>
+                        </div>
+                    </div>
+                    <p class="info-note">
+                        Ratings de TV actualizados hasta Noviembre 2025. Para SPOTS se usa CPR (Cost Per Rating por segundo), para otros formatos se usa CPM.
+                    </p>
+                </div>
             </div>
         </main>
 
-        <!-- Rankings Modal -->
-        <div class="modal-overlay" id="rankingsModal" hidden>
+        <!-- Rankings Modal Radio -->
+        <div class="modal-overlay" id="rankingsModalRadio" hidden>
             <div class="modal">
                 <div class="modal-header">
-                    <h2>Rankings CPI por Audiencia</h2>
-                    <button class="btn-icon" id="closeModalBtn" title="Cerrar">
+                    <h2>Rankings CPI por Audiencia - Radio</h2>
+                    <button class="btn-icon" id="closeModalBtnRadio" title="Cerrar">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                     </button>
                 </div>
-                <div class="modal-stats" id="modalStats">
-                    <!-- Stats se llenan dinámicamente -->
+                <div class="modal-stats" id="modalStatsRadio">
                 </div>
                 <div class="modal-filters">
-                    <select id="yearFilter" class="filter-select">
+                    <select id="yearFilterRadio" class="filter-select">
                         <option value="">Cargando...</option>
                     </select>
-                    <select id="monthFilter" class="filter-select">
+                    <select id="monthFilterRadio" class="filter-select">
                         <option value="">Todos los meses</option>
                     </select>
                 </div>
-                <div class="modal-body" id="rankingsContent">
+                <div class="modal-body" id="rankingsContentRadio">
                     <div class="loading-rankings">
                         <div class="spinner"></div>
                         <p>Cargando rankings...</p>
@@ -203,10 +366,41 @@
             </div>
         </div>
 
+        <!-- Rankings Modal TV -->
+        <div class="modal-overlay" id="rankingsModalTV" hidden>
+            <div class="modal modal-tv">
+                <div class="modal-header">
+                    <h2>Ratings por Canal - TV</h2>
+                    <button class="btn-icon" id="closeModalBtnTV" title="Cerrar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-stats" id="modalStatsTV">
+                </div>
+                <div class="modal-filters">
+                    <select id="yearFilterTV" class="filter-select">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <select id="monthFilterTV" class="filter-select">
+                        <option value="">Todos los meses</option>
+                    </select>
+                </div>
+                <div class="modal-body" id="rankingsContentTV">
+                    <div class="loading-rankings">
+                        <div class="spinner spinner-tv"></div>
+                        <p>Cargando ratings...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="footer">
             <p>Desarrollado por <strong>The Lab</strong> para Laureate</p>
-            <p class="footer-note">Los cálculos son estimados basados en CPM promedio y rankings de CPI</p>
+            <p class="footer-note">Los cálculos son estimados basados en CPM/CPR promedio y rankings de audiencia</p>
         </footer>
     </div>
 
