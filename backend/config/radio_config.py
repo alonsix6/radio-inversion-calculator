@@ -2,13 +2,15 @@
 Tablas de configuración fijas para el cálculo de inversión en radio.
 Rankings basados en IMPACTOS POR RANGO DE HORAS (no Audiencia Acumulada).
 Valores en miles (ej: 20.4 = 20,400 personas por hora).
+CPM calibrados con Plan de Medios 2024 de UPN.
 """
 
-# CPM por tipo de formato (sin cambios)
+# CPM calibrados con Plan 2024 (incluyen efecto de auspicios)
+# Ratio SPOT:MENCION:P/D = 1:6.17:15.38
 CPM_CONFIG = {
-    "SPOT": 11.6,
-    "MENCION": 39.8,
-    "P/D": 1.74
+    "SPOT": 19.26,
+    "MENCION": 118.82,
+    "P/D": 296.17
 }
 
 # Mapeo de tipos IBOPE a tipos agrupados (sin cambios)
@@ -120,37 +122,35 @@ MES_POR_AÑO = {
 def get_ranking(año: int, mes: str, emisora: str) -> float:
     """
     Busca el ranking para una combinación año-emisora.
-
-    Como solo hay un mes de datos por año, ignoramos el mes del archivo
-    y usamos el mes disponible para ese año.
+    Solo hay un mes disponible por año, se ignora el mes del archivo.
 
     Estrategia:
-    1. Si año <= 2023 → usar datos de 2023
-    2. Si año == 2024 → usar datos de 2024
-    3. Si año >= 2025 → usar datos de 2025
-    4. Si no existe la emisora, buscar en cualquier año disponible
-    5. Si no existe en ningún lado, retornar 0
+    1. Si año <= 2023 → usar datos de 2023 Septiembre
+    2. Si año == 2024 → usar datos de 2024 Julio
+    3. Si año >= 2025 → usar datos de 2025 Julio
+    4. Fallback: buscar en 2024 si no existe en año solicitado
+    5. Fallback: buscar en cualquier año disponible
     """
-    # Determinar qué año y mes usar
     if año <= 2023:
-        año_buscar = 2023
-        mes_buscar = "Septiembre"
+        año_buscar, mes_buscar = 2023, "Septiembre"
     elif año == 2024:
-        año_buscar = 2024
-        mes_buscar = "Julio"
-    else:  # 2025 o posterior
-        año_buscar = 2025
-        mes_buscar = "Julio"
+        año_buscar, mes_buscar = 2024, "Julio"
+    else:
+        año_buscar, mes_buscar = 2025, "Julio"
 
-    # Buscar ranking exacto
     key = (año_buscar, mes_buscar, emisora)
     if key in RANKINGS:
         return RANKINGS[key]
 
-    # Si no existe la emisora en ese año, buscar en cualquier año
+    # Fallback: buscar en 2024 si no existe en año solicitado
+    if año_buscar != 2024:
+        key_fallback = (2024, "Julio", emisora)
+        if key_fallback in RANKINGS:
+            return RANKINGS[key_fallback]
+
+    # Fallback: buscar en cualquier año
     for (a, m, e), v in RANKINGS.items():
         if e == emisora:
             return v
 
-    # Si no existe en ningún lado, retornar 0
     return 0.0
