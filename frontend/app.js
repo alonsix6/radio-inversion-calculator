@@ -657,6 +657,40 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// ==================== TEMPLATE DOWNLOADS ====================
+const downloadTemplateRadio = document.getElementById('downloadTemplateRadio');
+const downloadTemplateTV = document.getElementById('downloadTemplateTV');
+
+downloadTemplateRadio.addEventListener('click', () => downloadTemplate('radio'));
+downloadTemplateTV.addEventListener('click', () => downloadTemplate('tv'));
+
+async function downloadTemplate(type) {
+    try {
+        const response = await fetch(`${API_URL}/template/${type}`);
+        if (!response.ok) {
+            throw new Error('Error descargando plantilla');
+        }
+
+        const blob = await response.blob();
+        const contentDisposition = response.headers.get('Content-Disposition');
+        const filename = contentDisposition
+            ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+            : `Plantilla_${type === 'radio' ? 'Radio_IBOPE' : 'TV_Instar'}.xlsx`;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error downloading template:', error);
+        alert('Error al descargar la plantilla. Verifica tu conexión.');
+    }
+}
+
 // Check API health on load
 async function checkAPIHealth() {
     try {

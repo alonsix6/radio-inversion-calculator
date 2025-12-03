@@ -154,6 +154,17 @@ body {
     border: 1px solid var(--border);
 }
 
+.instructions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.instructions-header h2 {
+    margin-bottom: 0;
+}
+
 .instructions-card h2 {
     color: var(--text-secondary);
     font-weight: 500;
@@ -345,6 +356,29 @@ body {
     background: var(--bg-card-hover);
     border-color: var(--border-hover);
     color: var(--text-primary);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.btn-outline:hover {
+    background: var(--accent-subtle);
+    color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.btn-outline.btn-tv {
+    color: var(--accent-tv);
+    border-color: var(--accent-tv);
+}
+
+.btn-outline.btn-tv:hover {
+    background: var(--accent-tv-subtle);
+    color: var(--accent-tv-hover);
+    border-color: var(--accent-tv-hover);
 }
 
 .btn-success {

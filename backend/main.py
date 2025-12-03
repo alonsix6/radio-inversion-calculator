@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 import os
 from datetime import datetime
+from io import BytesIO
+import pandas as pd
 
 from processors.radio_processor import process_radio_file, get_radio_summary_stats
 from processors.tv_processor import process_tv_file, get_tv_summary_stats
@@ -265,6 +267,118 @@ async def get_tv_rankings():
             "canales_unicos": canales_unicos
         }
     }
+
+
+# ============== TEMPLATE DOWNLOADS ==============
+
+@app.get("/template/radio")
+async def download_radio_template():
+    """
+    Descarga una plantilla Excel con las columnas requeridas para Radio (IBOPE).
+    """
+    # Crear DataFrame con datos de ejemplo
+    data = {
+        'MARCA': ['UNIVERSIDAD EJEMPLO', 'UNIVERSIDAD EJEMPLO', 'OTRA UNIVERSIDAD'],
+        'TIPO': ['SPOT', 'MENCION', 'SPOT'],
+        'EMISORA/SITE': ['RPP FM', 'MODA FM', 'RADIOMAR'],
+        'MES': ['Enero', 'Enero', 'Febrero'],
+        'AÑO': [2024, 2024, 2024],
+        'Suma de SPOTS': [10, 5, 8]
+    }
+    df = pd.DataFrame(data)
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Datos', index=False)
+
+        # Agregar hoja de instrucciones
+        instrucciones = pd.DataFrame({
+            'Instrucciones': [
+                'Esta es una plantilla para el procesador de Radio (IBOPE)',
+                '',
+                'COLUMNAS REQUERIDAS:',
+                '- MARCA: Nombre del anunciante/universidad',
+                '- TIPO: Tipo de pauta (SPOT, MENCION, P&D)',
+                '- EMISORA/SITE: Nombre de la emisora de radio',
+                '- MES: Nombre del mes (Enero, Febrero, etc.)',
+                '- AÑO: Año de la pauta (2023, 2024, 2025)',
+                '- Suma de SPOTS: Cantidad de spots/menciones',
+                '',
+                'NOTAS:',
+                '- Los nombres de columnas no son sensibles a mayúsculas',
+                '- La columna de spots puede llamarse: "Suma de SPOTS", "SPOTS", etc.',
+                '- Rankings disponibles: Sep 2023, Jul 2024, Jul 2025'
+            ]
+        })
+        instrucciones.to_excel(writer, sheet_name='Instrucciones', index=False)
+
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": "attachment; filename=Plantilla_Radio_IBOPE.xlsx"
+        }
+    )
+
+
+@app.get("/template/tv")
+async def download_tv_template():
+    """
+    Descarga una plantilla Excel con las columnas requeridas para TV (Instar).
+    """
+    # Crear DataFrame con datos de ejemplo
+    data = {
+        'MARCA': ['UNIVERSIDAD EJEMPLO', 'UNIVERSIDAD EJEMPLO', 'OTRA UNIVERSIDAD'],
+        'TIPO COMERCIAL': ['SPOT', 'BANNER', 'SPOT'],
+        'CANAL': ['América Televisión', 'Latina', 'ATV'],
+        'MES': ['Enero', 'Enero', 'Febrero'],
+        'AÑO': [2024, 2024, 2024],
+        'TOTAL SPOTS': [5, 3, 4],
+        'DURACIÓN': [30, 15, 45],
+        'GRP# [RATING]': [15.5, 8.2, 12.3],
+        'GRP% [RATING]': [1.08, 0.57, 0.86]
+    }
+    df = pd.DataFrame(data)
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Datos', index=False)
+
+        # Agregar hoja de instrucciones
+        instrucciones = pd.DataFrame({
+            'Instrucciones': [
+                'Esta es una plantilla para el procesador de TV (Instar)',
+                '',
+                'COLUMNAS REQUERIDAS:',
+                '- MARCA: Nombre del anunciante/universidad',
+                '- TIPO COMERCIAL: Tipo de aviso (SPOT, BANNER, MENCIÓN, etc.)',
+                '- CANAL: Nombre del canal de TV',
+                '- MES: Nombre del mes (Enero, Febrero, etc.)',
+                '- AÑO: Año de la pauta (2023, 2024, 2025)',
+                '- TOTAL SPOTS: Cantidad de avisos',
+                '- DURACIÓN: Duración en segundos',
+                '- GRP# [RATING]: Impactos en miles (para BANNER, P/D)',
+                '- GRP% [RATING]: Rating en porcentaje (para SPOTS)',
+                '',
+                'NOTAS:',
+                '- Para SPOTS se usa GRP% × CPR × Segundos',
+                '- Para BANNER/P/D se usa GRP# × CPM',
+                '- Si no hay DURACIÓN, se asume 30 segundos'
+            ]
+        })
+        instrucciones.to_excel(writer, sheet_name='Instrucciones', index=False)
+
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": "attachment; filename=Plantilla_TV_Instar.xlsx"
+        }
+    )
 
 
 # ============== BACKWARDS COMPATIBILITY ==============
