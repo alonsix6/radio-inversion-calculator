@@ -71,8 +71,10 @@ def process_radio_file(file_content: bytes, filename: str) -> BytesIO:
     )
 
     # Calcular impactos e inversión
-    df['IMPACTOS'] = (df['SPOTS'] * df['RANKING_MILES'] * 1000).round(0).astype(int)
-    df['INVERSION_SOLES'] = (df['IMPACTOS'] * df['CPM'] / 1000).round(2)
+    # Nota: Rankings ya están en miles, no multiplicar/dividir por 1000
+    # Impactos = Spots × Ranking, Inversión = Impactos × CPM
+    df['IMPACTOS'] = (df['SPOTS'] * df['RANKING_MILES']).round(0).astype(int)
+    df['INVERSION_SOLES'] = (df['IMPACTOS'] * df['CPM']).round(2)
 
     # Crear Excel de salida
     output = BytesIO()
