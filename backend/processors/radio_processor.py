@@ -6,7 +6,7 @@ from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
-from config.radio_config import CPM_CONFIG, TIPO_MAPPING, MES_TO_RANKING, get_ranking
+from config.radio_config import CPM_CONFIG, TIPO_MAPPING, get_ranking
 
 
 def normalizar_mes(mes: str) -> str:
@@ -61,14 +61,12 @@ def process_radio_file(file_content: bytes, filename: str) -> BytesIO:
     df['AÑO'] = pd.to_numeric(df['AÑO'], errors='coerce').fillna(2024).astype(int)
 
     # Calcular columnas adicionales
-    df['MES_NORM'] = df['MES'].apply(normalizar_mes)
-    df['MES_RANKING'] = df['MES_NORM'].map(MES_TO_RANKING).fillna('Marzo')
     df['TIPO_AGRUP'] = df['TIPO'].map(TIPO_MAPPING).fillna('SPOT')
     df['CPM'] = df['TIPO_AGRUP'].map(CPM_CONFIG).fillna(11.6)
 
-    # Calcular ranking
+    # Calcular ranking (el mes se ignora, solo importa el año)
     df['RANKING_MILES'] = df.apply(
-        lambda row: get_ranking(row['AÑO'], row['MES_RANKING'], row['EMISORA']),
+        lambda row: get_ranking(row['AÑO'], str(row['MES']), row['EMISORA']),
         axis=1
     )
 
@@ -82,7 +80,7 @@ def process_radio_file(file_content: bytes, filename: str) -> BytesIO:
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         # Hoja 1: Detalle completo
         df_output = df[['MARCA', 'TIPO', 'TIPO_AGRUP', 'EMISORA', 'MES', 'AÑO',
-                        'MES_RANKING', 'SPOTS', 'CPM', 'RANKING_MILES', 'IMPACTOS', 'INVERSION_SOLES']]
+                        'SPOTS', 'CPM', 'RANKING_MILES', 'IMPACTOS', 'INVERSION_SOLES']]
         df_output.to_excel(writer, sheet_name='Detalle', index=False)
 
         # Hoja 2: Resumen por Marca
