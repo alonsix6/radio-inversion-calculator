@@ -73,8 +73,8 @@ def process_radio_file(file_content: bytes, filename: str) -> BytesIO:
     # Calcular impactos e inversión
     # Nota: Rankings ya están en miles, no multiplicar/dividir por 1000
     # Impactos = Spots × Ranking, Inversión = Impactos × CPM
-    df['IMPACTOS'] = (df['SPOTS'] * df['RANKING_MILES']).round(0).astype(int)
-    df['INVERSION_SOLES'] = (df['IMPACTOS'] * df['CPM']).round(2)
+    df['Impactos_Miles'] = (df['SPOTS'] * df['RANKING_MILES']).round(0).astype(int)
+    df['INVERSION_SOLES'] = (df['Impactos_Miles'] * df['CPM']).round(2)
 
     # Crear Excel de salida
     output = BytesIO()
@@ -82,43 +82,43 @@ def process_radio_file(file_content: bytes, filename: str) -> BytesIO:
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         # Hoja 1: Detalle completo
         df_output = df[['MARCA', 'TIPO', 'TIPO_AGRUP', 'EMISORA', 'MES', 'AÑO',
-                        'SPOTS', 'CPM', 'RANKING_MILES', 'IMPACTOS', 'INVERSION_SOLES']]
+                        'SPOTS', 'CPM', 'RANKING_MILES', 'Impactos_Miles', 'INVERSION_SOLES']]
         df_output.to_excel(writer, sheet_name='Detalle', index=False)
 
         # Hoja 2: Resumen por Marca
         resumen_marca = df.groupby('MARCA').agg({
             'SPOTS': 'sum',
-            'IMPACTOS': 'sum',
+            'Impactos_Miles': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_marca.columns = ['Marca', 'Total Spots', 'Total Impactos', 'Inversión (S/)']
+        resumen_marca.columns = ['Marca', 'Total Spots', 'Impactos_Miles', 'Inversión (S/)']
         resumen_marca.to_excel(writer, sheet_name='Resumen por Marca', index=False)
 
         # Hoja 3: Resumen por Marca y Tipo
         resumen_tipo = df.groupby(['MARCA', 'TIPO_AGRUP']).agg({
             'SPOTS': 'sum',
-            'IMPACTOS': 'sum',
+            'Impactos_Miles': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_tipo.columns = ['Marca', 'Tipo', 'Total Spots', 'Total Impactos', 'Inversión (S/)']
+        resumen_tipo.columns = ['Marca', 'Tipo', 'Total Spots', 'Impactos_Miles', 'Inversión (S/)']
         resumen_tipo.to_excel(writer, sheet_name='Resumen por Tipo', index=False)
 
         # Hoja 4: Resumen por Marca y Mes
         resumen_mes = df.groupby(['MARCA', 'AÑO', 'MES']).agg({
             'SPOTS': 'sum',
-            'IMPACTOS': 'sum',
+            'Impactos_Miles': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_mes.columns = ['Marca', 'Año', 'Mes', 'Total Spots', 'Total Impactos', 'Inversión (S/)']
+        resumen_mes.columns = ['Marca', 'Año', 'Mes', 'Total Spots', 'Impactos_Miles', 'Inversión (S/)']
         resumen_mes.to_excel(writer, sheet_name='Resumen por Mes', index=False)
 
         # Hoja 5: Resumen por Emisora
         resumen_emisora = df.groupby(['MARCA', 'EMISORA']).agg({
             'SPOTS': 'sum',
-            'IMPACTOS': 'sum',
+            'Impactos_Miles': 'sum',
             'INVERSION_SOLES': 'sum'
         }).reset_index()
-        resumen_emisora.columns = ['Marca', 'Emisora', 'Total Spots', 'Total Impactos', 'Inversión (S/)']
+        resumen_emisora.columns = ['Marca', 'Emisora', 'Total Spots', 'Impactos_Miles', 'Inversión (S/)']
         resumen_emisora.to_excel(writer, sheet_name='Resumen por Emisora', index=False)
 
         # Aplicar formato a todas las hojas

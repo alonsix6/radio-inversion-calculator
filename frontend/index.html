@@ -56,7 +56,17 @@
             <div class="tab-content active" id="radioContent">
                 <!-- Instructions Card -->
                 <div class="card instructions-card">
-                    <h2>Instrucciones - Radio</h2>
+                    <div class="instructions-header">
+                        <h2>Instrucciones - Radio</h2>
+                        <button class="btn btn-outline btn-sm" id="downloadTemplateRadio">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Descargar Plantilla
+                        </button>
+                    </div>
                     <ol>
                         <li>Exporta tu tabla dinámica de IBOPE en formato Excel</li>
                         <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>EMISORA/SITE</code>, <code>MES</code>, <code>AÑO</code>, <code>Suma de SPOTS</code></li>
@@ -176,19 +186,19 @@
                     <div class="cpm-grid">
                         <div class="cpm-item">
                             <span class="cpm-type">Spot</span>
-                            <span class="cpm-value">S/ 11.60</span>
+                            <span class="cpm-value">S/ 19.26</span>
                         </div>
                         <div class="cpm-item">
                             <span class="cpm-type">Mención</span>
-                            <span class="cpm-value">S/ 39.80</span>
+                            <span class="cpm-value">S/ 118.82</span>
                         </div>
                         <div class="cpm-item">
                             <span class="cpm-type">P&D</span>
-                            <span class="cpm-value">S/ 1.74</span>
+                            <span class="cpm-value">S/ 296.17</span>
                         </div>
                     </div>
                     <p class="info-note">
-                        Rankings de CPI actualizados hasta Noviembre 2025. Si no existe el mes exacto, se calcula el promedio de los dos meses más cercanos.
+                        CPM calibrados con Plan de Medios 2024. Rankings de CPI disponibles para Sep 2023, Jul 2024 y Jul 2025.
                     </p>
                 </div>
             </div>
@@ -197,10 +207,20 @@
             <div class="tab-content" id="tvContent">
                 <!-- Instructions Card TV -->
                 <div class="card instructions-card instructions-card-tv">
-                    <h2>Instrucciones - TV</h2>
+                    <div class="instructions-header">
+                        <h2>Instrucciones - TV</h2>
+                        <button class="btn btn-outline btn-sm btn-tv" id="downloadTemplateTV">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Descargar Plantilla
+                        </button>
+                    </div>
                     <ol>
                         <li>Exporta tu tabla dinámica de Instar en formato Excel</li>
-                        <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>CANAL</code>, <code>MES</code>, <code>AÑO</code>, <code>AVISOS</code>, <code>SEGUNDOS</code></li>
+                        <li>Verifica las columnas: <code>MARCA</code>, <code>TIPO</code>, <code>CANAL</code>, <code>MES</code>, <code>AÑO</code>, <code>GRP#</code>, <code>GRP%</code>, <code>SEGUNDOS</code></li>
                         <li>Arrastra el archivo o haz clic para seleccionarlo</li>
                         <li>Descarga el resultado con los cálculos de inversión</li>
                     </ol>
