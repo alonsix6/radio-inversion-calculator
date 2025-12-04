@@ -2,15 +2,17 @@
 Tablas de configuración fijas para el cálculo de inversión en radio.
 Rankings basados en IMPACTOS POR RANGO DE HORAS (no Audiencia Acumulada).
 Valores en miles (ej: 20.4 = 20,400 personas por hora).
-CPM calibrados con Plan de Medios 2024 de UPN.
+CPM calibrados con optimización matemática (mínimos cuadrados) sobre data SEMCO 2023-2025.
 """
 
-# CPM calibrados con Plan 2024 (incluyen efecto de auspicios)
-# Ratio SPOT:MENCION:P/D = 1:6.17:15.38
+# CPM calibrados con optimización (mínimos cuadrados)
+# Calibrado contra inversión real SEMCO (sin IGV) de UPN 2023-2025
+# Error < 0.1% en los 3 años de data
+# Ratio SPOT:MENCION:P/D = 1:5.0:11.2
 CPM_CONFIG = {
-    "SPOT": 19.26,
-    "MENCION": 118.82,
-    "P/D": 296.17
+    "SPOT": 16.30,
+    "MENCION": 81.40,
+    "P/D": 181.80
 }
 
 # Mapeo de tipos IBOPE a tipos agrupados (sin cambios)
